@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Salon Management System
 
 A complete salon management solution with three modules: Admin, Owner, and User Website.
@@ -117,3 +118,7 @@ Base URL: `http://localhost:5000/api`
 ## License
 
 MIT
+=======
+# SIZZER
+Salon Management System is software that manages appointments, billing, staff schedules, customer records, and inventory, improving efficiency, service quality, customer satisfaction, and overall business growth.
+>>>>>>> 7d411e630eb6f8626cca6eac28f4ef160c2236c7
