@@ -12,6 +12,29 @@ import "./App.css";
 
 const API_URL = "http://localhost:5000/api";
 
+// =============================================
+// THEME HOOK
+// =============================================
+function useTheme() {
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("sizzer-theme") || "dark";
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("sizzer-theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
+
+  return { theme, toggleTheme };
+}
+
+// =============================================
+// SCROLL TO TOP
+// =============================================
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -20,7 +43,10 @@ function ScrollToTop() {
   return null;
 }
 
-function Navbar({ user, onLogout }) {
+// =============================================
+// NAVBAR
+// =============================================
+function Navbar({ user, onLogout, theme, toggleTheme }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
 
@@ -35,8 +61,10 @@ function Navbar({ user, onLogout }) {
   return (
     <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
       <div className="container">
+
+        {/* LOGO */}
         <div className="nav-brand">
-          <Link to="/">
+          <Link to="/" onClick={() => setMobileMenu(false)}>
             <div className="logo">
               <img
                 src="/images/logo-icon.png"
@@ -51,45 +79,90 @@ function Navbar({ user, onLogout }) {
           </Link>
         </div>
 
-        <div className="nav-links">
-          <Link to="/" className="nav-link">
+        {/* HAMBURGER TOGGLE */}
+        <div
+          className={`hamburger ${mobileMenu ? "active" : ""}`}
+          onClick={() => setMobileMenu(!mobileMenu)}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        {/* NAV LINKS */}
+        <div className={`nav-links ${mobileMenu ? "active" : ""}`}>
+
+          <Link to="/" className="nav-link" onClick={() => setMobileMenu(false)}>
             HOME
           </Link>
-          <Link to="/salons" className="nav-link">
+
+          <Link to="/salons" className="nav-link" onClick={() => setMobileMenu(false)}>
             SALONS
           </Link>
-          <Link to="/about" className="nav-link">
+
+          <Link to="/about" className="nav-link" onClick={() => setMobileMenu(false)}>
             ABOUT
           </Link>
-          <Link to="/gallery" className="nav-link">
+
+          <Link to="/gallery" className="nav-link" onClick={() => setMobileMenu(false)}>
             GALLERY
           </Link>
-          <Link to="/contact" className="nav-link">
+
+          <Link to="/contact" className="nav-link" onClick={() => setMobileMenu(false)}>
             CONTACT
           </Link>
+
           {user ? (
             <>
-              <Link to="/my-appointments" className="nav-link">
+              <Link to="/my-appointments" className="nav-link" onClick={() => setMobileMenu(false)}>
                 BOOKINGS
               </Link>
-              <Link to="/profile" className="nav-link">
+
+              <Link to="/profile" className="nav-link" onClick={() => setMobileMenu(false)}>
                 PROFILE
               </Link>
-              <button className="btn-primary" onClick={onLogout}>
+
+              <button
+                className="btn-primary"
+                onClick={() => {
+                  onLogout();
+                  setMobileMenu(false);
+                }}
+              >
                 LOGOUT
               </button>
             </>
           ) : (
-            <Link to="/login" className="btn-primary">
+            <Link
+              to="/login"
+              className="btn-primary"
+              onClick={() => setMobileMenu(false)}
+            >
               BOOK NOW
             </Link>
           )}
+
+          {/* THEME TOGGLE BUTTON */}
+          <button
+            className="theme-toggle"
+            onClick={toggleTheme}
+            title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            aria-label="Toggle theme"
+          >
+            <span className="theme-toggle-icon">
+              {theme === "dark" ? "☀️" : "🌙"}
+            </span>
+          </button>
+
         </div>
       </div>
     </nav>
   );
 }
 
+// =============================================
+// HOME
+// =============================================
 function Home() {
   return (
     <div className="home">
@@ -216,17 +289,12 @@ function Home() {
             <div className="service-card">
               <div className="service-icon">💇</div>
               <h3>HAIR STYLING</h3>
-              <p>
-                Expert cuts, coloring, and styling by professional hairstylists
-              </p>
+              <p>Expert cuts, coloring, and styling by professional hairstylists</p>
             </div>
             <div className="service-card">
               <div className="service-icon">🧔</div>
               <h3>BEARD GROOMING</h3>
-              <p>
-                Precision beard trims and grooming services for the modern
-                gentleman
-              </p>
+              <p>Precision beard trims and grooming services for the modern gentleman</p>
             </div>
             <div className="service-card">
               <div className="service-icon">💅</div>
@@ -271,6 +339,9 @@ function Home() {
   );
 }
 
+// =============================================
+// SALONS LIST
+// =============================================
 function SalonsList() {
   const [salons, setSalons] = useState([]);
   const [filteredSalons, setFilteredSalons] = useState([]);
@@ -305,7 +376,6 @@ function SalonsList() {
 
   const filterSalons = () => {
     let filtered = [...salons];
-
     if (searchCity) {
       filtered = filtered.filter(
         (salon) =>
@@ -313,13 +383,9 @@ function SalonsList() {
           salon.name?.toLowerCase().includes(searchCity.toLowerCase()),
       );
     }
-
     if (selectedCategory !== "all") {
-      filtered = filtered.filter(
-        (salon) => salon.category === selectedCategory,
-      );
+      filtered = filtered.filter((salon) => salon.category === selectedCategory);
     }
-
     setFilteredSalons(filtered);
   };
 
@@ -352,7 +418,6 @@ function SalonsList() {
               <span>🔍</span>
             </button>
           </div>
-
           <div className="category-filters">
             {categories.map((cat) => (
               <button
@@ -438,6 +503,9 @@ function SalonsList() {
   );
 }
 
+// =============================================
+// LOGIN
+// =============================================
 function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -463,9 +531,7 @@ function Login({ onLogin }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-
       const data = await response.json();
-
       if (data.success) {
         localStorage.setItem("token", data.data.token);
         localStorage.setItem("user", JSON.stringify(data.data.user));
@@ -545,6 +611,9 @@ function Login({ onLogin }) {
   );
 }
 
+// =============================================
+// SALON DETAIL
+// =============================================
 function SalonDetail() {
   const [salon, setSalon] = useState(null);
   const navigate = useNavigate();
@@ -558,7 +627,6 @@ function SalonDetail() {
     try {
       const response = await fetch(`${API_URL}/salons/${id}`);
       const data = await response.json();
-
       if (data.success) {
         setSalon(data.data);
       }
@@ -567,22 +635,16 @@ function SalonDetail() {
     }
   };
 
-  if (!salon) return <div className="loading">Loading...</div>;
+  if (!salon) return <div className="loading-container"><div className="loader"></div></div>;
 
   return (
     <div className="page-container">
       <div className="container">
         <h1>{salon.name}</h1>
         <p>{salon.description}</p>
-        <p>
-          📍 {salon.city}, {salon.state}
-        </p>
+        <p>📍 {salon.city}, {salon.state}</p>
         <p>📞 {salon.phone}</p>
-        <p>
-          🕐 {salon.opening_time?.slice(0, 5)} -{" "}
-          {salon.closing_time?.slice(0, 5)}
-        </p>
-
+        <p>🕐 {salon.opening_time?.slice(0, 5)} - {salon.closing_time?.slice(0, 5)}</p>
         <button
           className="btn-primary-large"
           onClick={() => navigate(`/book/${salon.id}`)}
@@ -594,6 +656,9 @@ function SalonDetail() {
   );
 }
 
+// =============================================
+// MY APPOINTMENTS
+// =============================================
 function MyAppointments() {
   const [appointments, setAppointments] = useState([]);
 
@@ -603,15 +668,10 @@ function MyAppointments() {
 
   const fetchAppointments = async () => {
     const token = localStorage.getItem("token");
-
     const response = await fetch(`${API_URL}/appointments`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
-
     const data = await response.json();
-
     if (data.success) {
       setAppointments(data.data);
     }
@@ -620,44 +680,28 @@ function MyAppointments() {
   const formatDate = (isoDate) => {
     if (!isoDate) return "";
     const d = new Date(isoDate);
-    return d.toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
+    return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
   };
 
   const formatTime = (time) => {
     if (!time) return "";
-
-    // handles HH:mm:ss
     const [h, m] = time.split(":");
     const date = new Date();
     date.setHours(h, m);
-
-    return date.toLocaleTimeString("en-IN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
+    return date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true });
   };
 
   return (
     <div className="page-container">
       <div className="container">
         <h1>My Appointments</h1>
-
         {appointments.length === 0 ? (
-          <p>No bookings yet.</p>
+          <p style={{ color: "var(--text-gray)" }}>No bookings yet.</p>
         ) : (
           appointments.map((appt) => (
             <div key={appt.id} className="appointment-card">
               <p>📅 {formatDate(appt.appointment_date)}</p>
-
-              <p>
-                ⏰ {formatTime(appt.start_time)} - {formatTime(appt.end_time)}
-              </p>
-
+              <p>⏰ {formatTime(appt.start_time)} - {formatTime(appt.end_time)}</p>
               <p className={`status ${appt.status}`}>Status: {appt.status}</p>
               <hr />
             </div>
@@ -668,6 +712,9 @@ function MyAppointments() {
   );
 }
 
+// =============================================
+// PROFILE
+// =============================================
 function Profile({ user }) {
   return (
     <div className="page-container">
@@ -686,6 +733,9 @@ function Profile({ user }) {
   );
 }
 
+// =============================================
+// ABOUT PAGE
+// =============================================
 function AboutPage() {
   const team = [
     { name: "John Smith", role: "Founder & CEO", image: "👨‍💼" },
@@ -702,9 +752,7 @@ function AboutPage() {
           <h1 className="page-title">
             ABOUT<span className="gold-text"> SIZZER</span>
           </h1>
-          <p className="page-subtitle">
-            Your Trusted Partner in Beauty & Grooming
-          </p>
+          <p className="page-subtitle">Your Trusted Partner in Beauty & Grooming</p>
         </div>
       </section>
 
@@ -720,8 +768,7 @@ function AboutPage() {
               </h2>
               <p className="section-description">
                 We believe everyone deserves access to premium salon services.
-                Our platform connects you with the finest salons and expert
-                stylists.
+                Our platform connects you with the finest salons and expert stylists.
               </p>
               <p className="section-description">
                 Since our launch, we've helped thousands of customers discover
@@ -802,13 +849,12 @@ function AboutPage() {
   );
 }
 
+// =============================================
+// CONTACT PAGE
+// =============================================
 function ContactPage() {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    subject: "",
-    message: "",
+    name: "", email: "", phone: "", subject: "", message: "",
   });
   const [submitted, setSubmitted] = useState(false);
 
@@ -843,11 +889,7 @@ function ContactPage() {
                 <div className="contact-icon">📍</div>
                 <div>
                   <h3>ADDRESS</h3>
-                  <p>
-                    123 Salon Street
-                    <br />
-                    New York, NY 10001
-                  </p>
+                  <p>123 Salon Street<br />New York, NY 10001</p>
                 </div>
               </div>
               <div className="contact-info-item">
@@ -869,9 +911,7 @@ function ContactPage() {
             <div className="contact-form-container">
               <h2>SEND US A MESSAGE</h2>
               {submitted && (
-                <div className="success-message">
-                  ✓ Message sent successfully!
-                </div>
+                <div className="success-message">✓ Message sent successfully!</div>
               )}
               <form className="contact-form" onSubmit={handleSubmit}>
                 <div className="form-row">
@@ -880,9 +920,7 @@ function ContactPage() {
                     name="name"
                     placeholder="Your Name *"
                     value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
                   />
                   <input
@@ -890,9 +928,7 @@ function ContactPage() {
                     name="email"
                     placeholder="Your Email *"
                     value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     required
                   />
                 </div>
@@ -901,9 +937,7 @@ function ContactPage() {
                   placeholder="Your Message *"
                   rows="6"
                   value={formData.message}
-                  onChange={(e) =>
-                    setFormData({ ...formData, message: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   required
                 ></textarea>
                 <button type="submit" className="btn-primary-large">
@@ -918,72 +952,25 @@ function ContactPage() {
   );
 }
 
+// =============================================
+// GALLERY PAGE
+// =============================================
 function GalleryPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const categories = ["all", "haircuts", "coloring", "styling", "spa", "nails"];
   const galleryItems = [
-    {
-      id: 1,
-      category: "haircuts",
-      title: "Modern Fade",
-      img: "/images/modern-fade.jpg",
-    },
-    {
-      id: 2,
-      category: "coloring",
-      title: "Blonde Highlights",
-      img: "/images/blonde-highlights.jpg",
-    },
-    {
-      id: 3,
-      category: "styling",
-      title: "Elegant Updo",
-      img: "/images/elegant-updo.webp",
-    },
-    {
-      id: 4,
-      category: "spa",
-      title: "Facial Treatment",
-      img: "/images/facial-treatment.jpg",
-    },
-    {
-      id: 5,
-      category: "nails",
-      title: "Nail Art",
-      img: "/images/nail-art.jpg",
-    },
-    {
-      id: 6,
-      category: "haircuts",
-      title: "Classic Cut",
-      img: "/images/classic-cut.jpg",
-    },
-    {
-      id: 7,
-      category: "coloring",
-      title: "Balayage",
-      img: "/images/balayage.avif",
-    },
-    {
-      id: 8,
-      category: "styling",
-      title: "Beach Waves",
-      img: "/images/beach-waves.avif",
-    },
-    { id: 9, category: "spa", title: "Massage", img: "/images/massage.png" },
-    {
-      id: 10,
-      category: "nails",
-      title: "French Manicure",
-      img: "/images/french-manicure.jpg",
-    },
-    {
-      id: 11,
-      category: "haircuts",
-      title: "Layered Cut",
-      img: "/images/layered-cut.webp",
-    },
-    { id: 12, category: "coloring", title: "Ombre", img: "/images/ombre.jpg" },
+    { id: 1,  category: "haircuts",  title: "Modern Fade",       img: "/images/modern-fade.jpg" },
+    { id: 2,  category: "coloring",  title: "Blonde Highlights", img: "/images/blonde-highlights.jpg" },
+    { id: 3,  category: "styling",   title: "Elegant Updo",      img: "/images/elegant-updo.webp" },
+    { id: 4,  category: "spa",       title: "Facial Treatment",  img: "/images/facial-treatment.jpg" },
+    { id: 5,  category: "nails",     title: "Nail Art",          img: "/images/nail-art.jpg" },
+    { id: 6,  category: "haircuts",  title: "Classic Cut",       img: "/images/classic-cut.jpg" },
+    { id: 7,  category: "coloring",  title: "Balayage",          img: "/images/balayage.avif" },
+    { id: 8,  category: "styling",   title: "Beach Waves",       img: "/images/beach-waves.avif" },
+    { id: 9,  category: "spa",       title: "Massage",           img: "/images/massage.png" },
+    { id: 10, category: "nails",     title: "French Manicure",   img: "/images/french-manicure.jpg" },
+    { id: 11, category: "haircuts",  title: "Layered Cut",       img: "/images/layered-cut.webp" },
+    { id: 12, category: "coloring",  title: "Ombre",             img: "/images/ombre.jpg" },
   ];
 
   const filteredItems =
@@ -1025,11 +1012,7 @@ function GalleryPage() {
                 style={{ "--index": index }}
               >
                 <div className="gallery-image">
-                  <img
-                    src={item.img}
-                    alt={item.title}
-                    className="gallery-img"
-                  />
+                  <img src={item.img} alt={item.title} className="gallery-img" />
                   <div className="gallery-overlay">
                     <h3>{item.title}</h3>
                     <p>{item.category}</p>
@@ -1054,6 +1037,9 @@ function GalleryPage() {
   );
 }
 
+// =============================================
+// FOOTER
+// =============================================
 function Footer() {
   return (
     <footer className="footer-dark">
@@ -1095,6 +1081,10 @@ function Footer() {
     </footer>
   );
 }
+
+// =============================================
+// BOOK APPOINTMENT
+// =============================================
 function BookAppointment() {
   const { salonId } = useParams();
   const navigate = useNavigate();
@@ -1109,49 +1099,35 @@ function BookAppointment() {
   const today = new Date().toISOString().split("T")[0];
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ Convert HH:mm → HH:mm:ss (Spring Boot friendly)
   const formatTimeForAPI = (time) => {
     if (!time) return null;
     return time.length === 5 ? `${time}:00` : time;
   };
 
-  // ⭐ Duration helper (user clarity)
   const calculateDuration = (start, end) => {
     if (!start || !end) return "";
-
     const [sh, sm] = start.split(":").map(Number);
     const [eh, em] = end.split(":").map(Number);
-
     const startMin = sh * 60 + sm;
     const endMin = eh * 60 + em;
-
     if (endMin <= startMin) return "Invalid time range";
-
     const diff = endMin - startMin;
     const h = Math.floor(diff / 60);
     const m = diff % 60;
-
     return `${h ? h + " hr " : ""}${m} min`;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // ✅ validation
     if (formData.start_time >= formData.end_time) {
       alert("End time must be after start time");
       return;
     }
-
     setLoading(true);
     const token = localStorage.getItem("token");
-
     try {
       const response = await fetch(`${API_URL}/appointments`, {
         method: "POST",
@@ -1167,9 +1143,7 @@ function BookAppointment() {
           total_price: 500,
         }),
       });
-
       const data = await response.json();
-
       if (data.success) {
         alert("✅ Appointment Booked Successfully!");
         navigate("/my-appointments");
@@ -1179,7 +1153,6 @@ function BookAppointment() {
     } catch (err) {
       alert("Server error. Please try again.");
     }
-
     setLoading(false);
   };
 
@@ -1187,9 +1160,7 @@ function BookAppointment() {
     <div className="book-page">
       <div className="book-card">
         <h1 className="book-title">📅 Book Your Appointment</h1>
-
         <form onSubmit={handleSubmit} className="book-form">
-          {/* Date */}
           <div className="form-group">
             <label>Select Date</label>
             <input
@@ -1201,8 +1172,6 @@ function BookAppointment() {
               onChange={handleChange}
             />
           </div>
-
-          {/* Time section */}
           <div className="time-section">
             <div className="form-group">
               <label>Start Time</label>
@@ -1214,7 +1183,6 @@ function BookAppointment() {
                 onChange={handleChange}
               />
             </div>
-
             <div className="form-group">
               <label>End Time</label>
               <input
@@ -1226,20 +1194,12 @@ function BookAppointment() {
               />
             </div>
           </div>
-
-          {/* Duration preview */}
           {formData.start_time && formData.end_time && (
-            <p className="time-preview">
-              ⏱ Duration:{" "}
-              {calculateDuration(formData.start_time, formData.end_time)}
+            <p className="time-hint">
+              ⏱ Duration: {calculateDuration(formData.start_time, formData.end_time)}
             </p>
           )}
-
-          <button
-            type="submit"
-            className="btn-primary-large"
-            disabled={loading}
-          >
+          <button type="submit" className="btn-primary-large" disabled={loading}>
             {loading ? "Booking..." : "Confirm Booking →"}
           </button>
         </form>
@@ -1247,8 +1207,13 @@ function BookAppointment() {
     </div>
   );
 }
+
+// =============================================
+// APP ROOT
+// =============================================
 function App() {
   const [user, setUser] = useState(null);
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -1271,7 +1236,12 @@ function App() {
     <Router>
       <ScrollToTop />
       <div className="app">
-        <Navbar user={user} onLogout={handleLogout} />
+        <Navbar
+          user={user}
+          onLogout={handleLogout}
+          theme={theme}
+          toggleTheme={toggleTheme}
+        />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/salons" element={<SalonsList />} />
@@ -1282,21 +1252,15 @@ function App() {
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route
             path="/my-appointments"
-            element={
-              user ? <MyAppointments /> : <Login onLogin={handleLogin} />
-            }
+            element={user ? <MyAppointments /> : <Login onLogin={handleLogin} />}
           />
           <Route
             path="/profile"
-            element={
-              user ? <Profile user={user} /> : <Login onLogin={handleLogin} />
-            }
+            element={user ? <Profile user={user} /> : <Login onLogin={handleLogin} />}
           />
           <Route
             path="/book/:salonId"
-            element={
-              user ? <BookAppointment /> : <Login onLogin={handleLogin} />
-            }
+            element={user ? <BookAppointment /> : <Login onLogin={handleLogin} />}
           />
         </Routes>
         <Footer />
