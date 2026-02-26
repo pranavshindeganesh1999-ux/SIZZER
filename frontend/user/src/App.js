@@ -13,10 +13,10 @@ const SERVICE_CATEGORIES = [
   "Nail Care","Skin Care","Spa & Massage","Makeup","Waxing","Other",
 ];
 const categoryIcon = (cat) => ({
-  "Hair Styling":"💇","Hair Coloring":"🎨","Beard & Shaving":"🧔",
-  "Nail Care":"💅","Skin Care":"✨","Spa & Massage":"💆",
-  "Makeup":"💄","Waxing":"🌿","Other":"🌟",
-}[cat] || "🌟");
+  "Hair Styling":"","Hair Coloring":"","Beard & Shaving":"",
+  "Nail Care":"","Skin Care":"","Spa & Massage":"",
+  "Makeup":"","Waxing":"","Other":"",
+}[cat] || "");
 const fmtDuration = (d) => {
   d = Number(d);
   if (!d) return "—";
