@@ -1151,7 +1151,7 @@ html {
 
 .filter-btn.active {
   border-color: var(--primary);
-  color: var(--text-dark);
+  color: var(--primary-dark);
 }
 
 .filter-btn.active::before,
