@@ -662,12 +662,238 @@ function AboutPage(){
 // =============================================
 // CONTACT
 // =============================================
-function ContactPage(){
-  const[formData,setFormData]=useState({name:"",email:"",phone:"",subject:"",message:""});const[submitted,setSubmitted]=useState(false);
-  const handleSubmit=(e)=>{e.preventDefault();setSubmitted(true);setTimeout(()=>{setSubmitted(false);setFormData({name:"",email:"",phone:"",subject:"",message:""});},3000);};
-  return<div className="contact-page"><section className="contact-hero"><div className="container"><div className="decorative-line"></div><h1 className="page-title">GET IN<span className="gold-text"> TOUCH</span></h1><p className="page-subtitle">We'd Love to Hear From You</p></div></section><section className="contact-content-section"><div className="container"><div className="contact-grid"><div className="contact-info"><h2>CONTACT INFORMATION</h2><p>Have questions? We're here to help!</p>{[{icon:"📍",title:"ADDRESS",body:"123 Salon Street\nNew York, NY 10001"},{icon:"📞",title:"PHONE",body:"+1 (555) 123-4567"},{icon:"📧",title:"EMAIL",body:"info@sizzer.com"}].map((item,i)=><div key={i} className="contact-info-item"><div className="contact-icon">{item.icon}</div><div><h3>{item.title}</h3><p>{item.body}</p></div></div>)}</div><div className="contact-form-container"><h2>SEND US A MESSAGE</h2>{submitted&&<div className="success-message">✓ Message sent successfully!</div>}<form className="contact-form" onSubmit={handleSubmit}><div className="form-row"><input type="text" name="name" placeholder="Your Name *" value={formData.name} onChange={e=>setFormData({...formData,name:e.target.value})} required/><input type="email" name="email" placeholder="Your Email *" value={formData.email} onChange={e=>setFormData({...formData,email:e.target.value})} required/></div><textarea name="message" placeholder="Your Message *" rows="6" value={formData.message} onChange={e=>setFormData({...formData,message:e.target.value})} required></textarea><button type="submit" className="btn-primary-large">SEND MESSAGE<span className="arrow">→</span></button></form></div></div></div></section></div>;
-}
+function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [submitted, setSubmitted] = useState(false);
 
+  // ── Validators ────────────────────────────────────────────────────────────
+  const validate = () => {
+    const e = {};
+
+    // Name – required, letters/spaces/hyphens/apostrophes only, no digits
+    if (!formData.name.trim()) {
+      e.name = "Name is required.";
+    } else if (/\d/.test(formData.name)) {
+      e.name = "Name must not contain numbers.";
+    } else if (!/^[a-zA-Z\s'-]+$/.test(formData.name.trim())) {
+      e.name = "Name contains invalid characters.";
+    } else if (formData.name.trim().length < 2) {
+      e.name = "Name must be at least 2 characters.";
+    }
+
+    // Email – required, valid format
+    if (!formData.email.trim()) {
+      e.email = "Email is required.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      e.email = "Enter a valid email address.";
+    }
+
+    // Phone – optional; if provided must be valid format
+    if (formData.phone.trim()) {
+      const digitsOnly = formData.phone.replace(/\D/g, "");
+      if (digitsOnly.length < 7 || digitsOnly.length > 15) {
+        e.phone = "Phone number must be 7–15 digits.";
+      }
+    }
+
+    // Subject – optional, max 100 chars
+    if (formData.subject.trim() && formData.subject.trim().length > 100) {
+      e.subject = "Subject must be under 100 characters.";
+    }
+
+    // Message – required, 10–1000 chars
+    if (!formData.message.trim()) {
+      e.message = "Message is required.";
+    } else if (formData.message.trim().length < 10) {
+      e.message = "Message must be at least 10 characters.";
+    } else if (formData.message.trim().length > 1000) {
+      e.message = "Message must be under 1000 characters.";
+    }
+
+    return e;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "phone") {
+      // Allow only digits, +, spaces, hyphens, parentheses
+      const cleaned = value.replace(/[^\d+\s\-()]/g, "").slice(0, 20);
+      setFormData((prev) => ({ ...prev, phone: cleaned }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+
+    // Clear this field's error as the user types
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  // Block digit key presses in name field only
+  const handleNameKeyDown = (e) => {
+    if (/\d/.test(e.key)) e.preventDefault();
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setErrors({});
+    setSubmitted(true);
+    setTimeout(() => {
+      setSubmitted(false);
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+    }, 3000);
+  };
+
+  return (
+    <div className="contact-page">
+      <section className="contact-hero">
+        <div className="container">
+          <div className="decorative-line"></div>
+          <h1 className="page-title">
+            GET IN<span className="gold-text"> TOUCH</span>
+          </h1>
+          <p className="page-subtitle">We'd Love to Hear From You</p>
+        </div>
+      </section>
+
+      <section className="contact-content-section">
+        <div className="container">
+          <div className="contact-grid">
+
+            {/* ── Contact Info ── */}
+            <div className="contact-info">
+              <h2>CONTACT INFORMATION</h2>
+              <p>Have questions? We're here to help!</p>
+              {[
+                { icon: "📍", title: "ADDRESS", body: "123 Salon Street\nNew York, NY 10001" },
+                { icon: "📞", title: "PHONE",   body: "+1 (555) 123-4567" },
+                { icon: "📧", title: "EMAIL",   body: "info@sizzer.com" },
+              ].map((item, i) => (
+                <div key={i} className="contact-info-item">
+                  <div className="contact-icon">{item.icon}</div>
+                  <div>
+                    <h3>{item.title}</h3>
+                    <p>{item.body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* ── Contact Form ── */}
+            <div className="contact-form-container">
+              <h2>SEND US A MESSAGE</h2>
+
+              {submitted && (
+                <div className="success-message">✓ Message sent successfully!</div>
+              )}
+
+              <form className="contact-form" onSubmit={handleSubmit} noValidate>
+
+                {/* Row 1: Name + Email */}
+                <div className="form-row">
+                  <div className="form-field">
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Your Name *"
+                      value={formData.name}
+                      onChange={handleChange}
+                      onKeyDown={handleNameKeyDown}
+                      className={errors.name ? "input-error" : ""}
+                    />
+                    <span className="field-error">{errors.name || "\u00A0"}</span>
+                  </div>
+
+                  <div className="form-field">
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Your Email *"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className={errors.email ? "input-error" : ""}
+                    />
+                    <span className="field-error">{errors.email || "\u00A0"}</span>
+                  </div>
+                </div>
+
+                {/* Row 2: Phone + Subject */}
+                <div className="form-row">
+                  <div className="form-field">
+                    <input
+                      type="tel"
+                      name="phone"
+                      placeholder="Phone Number (optional)"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      inputMode="tel"
+                      className={errors.phone ? "input-error" : ""}
+                    />
+                    <span className="field-error">{errors.phone || "\u00A0"}</span>
+                  </div>
+
+                  <div className="form-field">
+                    <input
+                      type="text"
+                      name="subject"
+                      placeholder="Subject (optional)"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      maxLength={100}
+                      className={errors.subject ? "input-error" : ""}
+                    />
+                    <span className="field-error">{errors.subject || "\u00A0"}</span>
+                  </div>
+                </div>
+
+                {/* Message */}
+                <div className="form-field">
+                  <textarea
+                    name="message"
+                    placeholder="Your Message * (10–1000 characters)"
+                    rows="6"
+                    value={formData.message}
+                    onChange={handleChange}
+                    maxLength={1000}
+                    className={errors.message ? "input-error" : ""}
+                  />
+                  <div className="message-meta">
+                    <span className="field-error">{errors.message || "\u00A0"}</span>
+                    <span
+                      className="char-count"
+                      style={{ color: formData.message.length > 950 ? "#EF4444" : undefined }}
+                    >
+                      {formData.message.length}/1000
+                    </span>
+                  </div>
+                </div>
+
+                <button type="submit" className="btn-primary-large">
+                  SEND MESSAGE <span className="arrow">→</span>
+                </button>
+
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
 // =============================================
 // GALLERY
 // =============================================

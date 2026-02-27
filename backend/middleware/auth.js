@@ -1,3 +1,5 @@
+// middleware/auth.js
+
 const jwt = require('jsonwebtoken');
 
 // Middleware to verify JWT token
@@ -44,7 +46,12 @@ const authorize = (...roles) => {
   };
 };
 
+// Combined middleware: verify token + restrict to owner role only
+// Used by routes that require('../middleware/ownerAuth')
+const ownerAuth = [authenticate, authorize('owner')];
+
 module.exports = {
   authenticate,
-  authorize
+  authorize,
+  ownerAuth
 };
