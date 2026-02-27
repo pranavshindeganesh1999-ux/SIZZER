@@ -452,8 +452,6 @@ function Appointments() {
               <select value={appt.status} onChange={e=>updateStatus(appt.id,e.target.value)}>
                 <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
               </select>
             </td>
             <td><button className="btn-danger" onClick={()=>deleteAppointment(appt.id)}>Delete</button></td>
