@@ -8,9 +8,9 @@
 
 const express = require("express");
 const router  = express.Router();
-const db      = require("../db");           // adjust to your DB helper
+const db      = require("../config/database");           // adjust to your DB helper
 const auth    = require("../middleware/auth");      // sets req.user
-const ownerAuth = require("../middleware/ownerAuth"); // verifies salon ownership
+//const ownerAuth = require("../middleware/ownerAuth"); // verifies salon ownership
 
 // ──────────────────────────────────────────────────────────
 //  HELPERS

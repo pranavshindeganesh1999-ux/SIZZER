@@ -62,7 +62,7 @@ app.use('/api/owner', require('./routes/owner'));
 app.use('/api/user', require('./routes/user'));
 app.use('/api/salons', require('./routes/salons'));
 app.use('/api/appointments', require('./routes/appointments'));
-app.use('/api/services', require('./routes/services'));
+//app.use('/api/services', require('./routes/services'));
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/staff', require('./routes/staff'));
 const adminRoutes = require('./routes/admin');

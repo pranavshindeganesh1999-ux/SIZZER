@@ -280,6 +280,7 @@ html {
   display: flex;
   align-items: center;
   gap: 2.5rem;
+  margin-left: 2rem;
 }
 
 .nav-link {
