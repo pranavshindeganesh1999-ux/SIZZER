@@ -428,8 +428,7 @@ function Appointments() {
             <option value="all">All</option>
             <option value="pending">Pending</option>
             <option value="confirmed">Confirmed</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
+            
           </select>
         </div>
         {(apptSearch || statusFilter !== 'all') && (
