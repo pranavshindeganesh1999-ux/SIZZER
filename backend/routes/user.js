@@ -76,7 +76,7 @@ router.put('/profile', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Update profile error:', error);
+    console.error('Update profile error:', error);  
     res.status(500).json({
       success: false,
       message: 'Error updating profile'

@@ -317,7 +317,7 @@ html {
 .btn-primary {
   padding: 0.85rem 2.2rem;
   background: transparent;
-  color: var(--text-light);
+  color: var(--primary);
   border: var(--border-primary);
   font-family: 'Oswald', sans-serif;
   font-size: 0.9rem;
@@ -552,7 +552,7 @@ html {
 .btn-outline-large {
   padding: 1.4rem 3.5rem;
   background: transparent;
-  color: var(--text-light);
+  color: var(--primary);
   border: 2px solid var(--text-light);
   font-family: 'Oswald', sans-serif;
   font-size: 1.05rem;

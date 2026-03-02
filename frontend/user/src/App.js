@@ -897,6 +897,15 @@ function ContactPage() {
 // =============================================
 // GALLERY
 // =============================================
+// ============================================================
+// FILE: pages/GalleryPage.jsx  (USER-FACING — replaces hardcoded version)
+// ============================================================
+
+// import { useState, useEffect } from 'react';
+// import { Link } from 'react-router-dom';
+
+// const API_URL = import.meta.env.VITE_API_URL || '';
+
 function GalleryPage(){
   const[selectedCategory,setSelectedCategory]=useState("all");
   const categories=["all","haircuts","coloring","styling","spa","nails"];

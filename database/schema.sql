@@ -85,7 +85,16 @@ CREATE TABLE services (
         REFERENCES salons(id)
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
+ 
+ --salon_gallery
+CREATE TABLE IF NOT EXISTS salon_gallery (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  owner_id   INT          NOT NULL,
+  title      VARCHAR(255) NOT NULL,
+  category   VARCHAR(100) NOT NULL,
+  image_url  VARCHAR(500) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 -- Appointments Table
 CREATE TABLE appointments (
